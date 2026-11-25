@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESLAM AI</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #090810;
+    color: white;
+    font-family: Cairo, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.app {
+    height: 100vh;
+    display: flex;
+}
+
+.sidebar {
+    width: 260px;
+    background: #100e19;
+    border-left: 1px solid #292337;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 900;
+    margin-bottom: 30px;
+}
+
+.logo span {
+    color: #a855f7;
+}
+
+.new-chat {
+    padding: 13px;
+    border: 0;
+    border-radius: 12px;
+    color: white;
+    background: linear-gradient(135deg,#9333ea,#6d28d9);
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.history {
+    margin-top: 25px;
+    flex: 1;
+    overflow: auto;
+}
+
+.history div {
+    padding: 12px;
+    margin-bottom: 7px;
+    background: #191625;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    height: 70px;
+    border-bottom: 1px solid #292337;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.status {
+    color: #4ade80;
+    font-size: 12px;
+}
+
+.chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 25px 15px;
+}
+
+.welcome {
+    text-align: center;
+    margin: 10vh auto 40px;
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg,#9333ea,#4c1d95);
+    border-radius: 25px;
+    margin: auto auto 20px;
+    display: grid;
+    place-items: center;
+    font-size: 38px;
+    box-shadow: 0 0 40px #9333ea55;
+}
+
+.welcome h1 {
+    font-size: 30px;
+}
+
+.welcome h1 span {
+    color: #a855f7;
+}
+
+.welcome p {
+    color: #9993ad;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.messages {
+    max-width: 800px;
+    margin: auto;
+}
+
+.message {
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 14px;
+    background: #191625;
+    line-height: 2;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+}
+
+.user {
+    background: #38205b;
+}
+
+.input-area {
+    padding: 15px;
+}
+
+.input-box {
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    background: #191625;
+    border: 1px solid #44305f;
+    border-radius: 16px;
+    padding: 10px;
+}
+
+textarea {
+    flex: 1;
+    background: transparent;
+    color: white;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: inherit;
+    padding: 10px;
+    font-size: 14px;
+    min-height: 40px;
+    max-height: 120px;
+}
+
+.send {
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 12px;
+    background: #9333ea;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.footer {
+    text-align: center;
+    color: #777;
+    font-size: 10px;
+    padding: 10px;
+}
+
+@media(max-width:700px) {
+    .sidebar {
+        display: none;
+    }
+
+    .welcome h1 {
+        font-size: 23px;
+    }
+}
+</style></head><body><div class="app"><aside class="sidebar">
+    <div class="logo">✦ ESLAM <span>AI</span></div>
+    <button class="new-chat" onclick="newChat()">＋ محادثة جديدة</button>
+    <div class="history" id="history"></div>
+    <div style="color:#aaa;font-size:12px">
+        👤 Eslam Sameh
+    </div>
+</aside><main class="main"><header class="header">
+    <b>المساعد الذكي</b>
+    <span class="status">● النظام جاهز</span>
+</header>
+
+<section class="chat" id="chat">
+
+    <div class="welcome" id="welcome">
+        <div class="icon">✦</div>
+        <h1>أهلاً بك في <span>ESLAM AI</span></h1>
+        <p>مساعدك الذكي للإبداع والتعلم والبرمجة.</p>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+</section>
+
+<footer class="input-area">
+
+    <div class="input-box">
+        <textarea
+            id="input"
+            placeholder="اسأل ESLAM AI عن أي شيء..."
+            rows="1"
+            onkeydown="keyboard(event)"
+        ></textarea>
+
+        <button class="send" onclick="send()">➤</button>
+    </div>
+
+    <div class="footer">
+        ESLAM AI © 2026 — Developed by Eslam Sameh
+    </div>
+
+</footer>
+
+</main>
+</div><script>
+let messages = [];
+
+function addMessage(text,type) {
+    const box = document.createElement("div");
+    box.className = "message " + type;
+    box.textContent = text;
+    document.getElementById("messages").appendChild(box);
+
+    document.getElementById("chat").scrollTop =
+        document.getElementById("chat").scrollHeight;
+}
+
+function newChat() {
+    messages = [];
+    document.getElementById("messages").innerHTML = "";
+    document.getElementById("welcome").style.display = "block";
+}
+
+function keyboard(e) {
+    if(e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        send();
+    }
+}
+
+async function send() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+
+    if(!text) return;
+
+    input.value = "";
+
+    document.getElementById("welcome").style.display = "none";
+
+    addMessage(text,"user");
+
+    messages.push({
+        role: "user",
+        content: text
+    });
+
+    const loading = document.createElement("div");
+    loading.className = "message";
+    loading.textContent = "✦ ESLAM AI يفكر...";
+    loading.id = "loading";
+    document.getElementById("messages").appendChild(loading);
+
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                messages: messages
+            })
+        });
+
+        if(!response.ok) throw new Error("API Error");
+
+        const data = await response.json();
+
+        document.getElementById("loading").remove();
+
+        const reply = data.reply;
+
+        addMessage(reply,"ai");
+
+        messages.push({
+            role: "assistant",
+            content: reply
+        });
+
+    } catch(error) {
+        document.getElementById("loading")?.remove();
+        addMessage(
+            "تعذر الاتصال بالسيرفر. تأكد من تشغيل Backend وربط API.",
+            "ai"
+        );
+    }
+}
+</script></body>
+  </html>
